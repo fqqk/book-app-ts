@@ -1,5 +1,5 @@
 import { User } from '../types/api/user'
-import { useSignUpHandleError } from './ErrorFunction'
+import { SignUpHandleError } from './ErrorFunction'
 
 export const SignUpFunc = async (data: User): Promise<void> => {
   const BASE_URL = 'https://api-for-missions-and-railways.herokuapp.com/users'
@@ -18,5 +18,5 @@ export const SignUpFunc = async (data: User): Promise<void> => {
     body: JSON.stringify(json),
   })
 
-  return useSignUpHandleError(res)
+  return SignUpHandleError(res)
 }

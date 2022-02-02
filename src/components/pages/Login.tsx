@@ -4,20 +4,58 @@
 import { VFC, memo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { AuthFunc } from '../../functions/AuthFunction'
+import { useRecoilState } from 'recoil'
+
+import { userAuthApiResponse } from '../../types/api/userAuthApiResponse'
 import { User } from '../../types/api/user'
-import { LoginHandleError } from '../../functions/ErrorFunction'
+import { loginState } from '../../globalStates/loginAtom'
 
 type Auth = Omit<User, 'name'>
 
 export const Login: VFC = memo(() => {
   const navigate = useNavigate()
-  const [loginData, setLoginData] = useState<Auth>({ email: '', password: '' })
-  const [isLogin, setIsLogin] = useState<boolean>(false)
+  // const [isLogin, setIsLogin] = useState<boolean>(false)
+  const [isLogin, setIsLogin] = useRecoilState(loginState)
 
-  const setData = (data: Auth) => {
-    const res = AuthFunc(data)
-    const isLogin = LoginHandleError(res)
+  const handleError = (resJson: userAuthApiResponse) => {
+    if ('token' in resJson) {
+      reset()
+      localStorage.setItem('token', resJson.token)
+      alert('ログイン成功')
+      setIsLogin(true)
+    } else {
+      switch (resJson.ErrorCode) {
+        case 400:
+          alert(resJson.ErrorMessageJP)
+          break
+
+        case 403:
+          alert(resJson.ErrorMessageJP)
+          break
+
+        case 500:
+          alert(resJson.ErrorMessageJP)
+          break
+      }
+    }
+  }
+
+  const AuthFunc = async (data: Auth): Promise<void> => {
+    const BASE_URL = 'https://api-for-missions-and-railways.herokuapp.com/signin'
+    const json: Auth = {
+      email: data.email,
+      password: data.password,
+    }
+
+    const res = await fetch(BASE_URL, {
+      method: 'POST',
+      // headersで"content-type":"application/json"を指定
+      headers: { 'Content-Type': 'application/json' },
+      // bodyにjsonオブジェクトをJSON文字列化して指定
+      body: JSON.stringify(json),
+    })
+    const resJson: userAuthApiResponse = await res.json()
+    handleError(resJson)
   }
 
   const {
@@ -37,7 +75,7 @@ export const Login: VFC = memo(() => {
   return (
     <div>
       <h1>ログイン</h1>
-      <form onSubmit={handleSubmit<Auth>(setData)}>
+      <form onSubmit={handleSubmit<Auth>(AuthFunc)}>
         <input
           id="email"
           placeholder="email"

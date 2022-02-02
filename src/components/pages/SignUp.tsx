@@ -4,7 +4,7 @@ import { VFC, memo } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { User } from '../../types/api/user'
-import { useSignUp } from '../../hooks/useSignUp'
+import { SignUpFunc } from '../../functions/SignUpFunction'
 
 export const SignUp: VFC = memo(() => {
   const {
@@ -25,7 +25,7 @@ export const SignUp: VFC = memo(() => {
   return (
     <div>
       <h1>hook form</h1>
-      <form onSubmit={handleSubmit<User>(useSignUp)}>
+      <form onSubmit={handleSubmit<User>(SignUpFunc)}>
         <input id="name" placeholder="name" {...register('name', { required: true })} />
         {errors.name && '名前が入力されていません'}
         <br />

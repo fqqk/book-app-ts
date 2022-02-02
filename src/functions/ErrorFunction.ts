@@ -18,7 +18,6 @@ export const SignUpHandleError = async (res: Response) => {
     default:
       localStorage.setItem('token', resJson.token)
       alert('登録完了。レビューページへリダイレクトします')
-
       break
   }
 }
